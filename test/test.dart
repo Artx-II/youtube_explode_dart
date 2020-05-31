@@ -2,20 +2,23 @@ import 'package:test/test.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 void main() {
+
+  var url = 'https://www.youtube.com/watch?v=teHNoT99deQ';
+  var id = 'teHNoT99deQ';
+
   test('Parse valid video id', () {
-    var id = 'en2D_5TzXCA';
-    expect(YoutubeExplode.parseVideoId(id), equals('en2D_5TzXCA'));
+    var id = 'dpeavGs0uO0';
+    expect(YoutubeExplode.parseVideoId(id), equals(id));
   });
 
   test('Parse id from youtube url', () {
-    var url = 'https://www.youtube.com/watch?v=en2D_5TzXCA';
-    expect(YoutubeExplode.parseVideoId(url), equals('en2D_5TzXCA'));
+    expect(YoutubeExplode.parseVideoId(url), equals(id));
   });
 
   test('Get video title', () async {
     var yt = YoutubeExplode();
-    var video = await yt.getVideo('en2D_5TzXCA');
-    expect(video.title, equals('Lady Gaga - Million Reasons'));
+    var video = await yt.getVideo(id);
+    print(video.title);
     yt.close();
   });
 
@@ -24,11 +27,21 @@ void main() {
     expect(YoutubeExplode.parseVideoId(id), isNull);
   });
 
-  test('Get video media stream', () async {
+  test('Get video media stream details', () async {
     var yt = YoutubeExplode();
-    expect(await yt.getVideoMediaStream('en2D_5TzXCA'), isNotNull);
+    var mediaStream = await yt.getVideoMediaStream(id);
+    print(mediaStream.videoDetails.title);
+    print("Video duration: ${mediaStream.videoDetails.duration}");
+    print("Audio Size: ${mediaStream.audio.last.size}");
+    for (var size in mediaStream.video) {
+      print("Resolution: ");
+      print("Height: ${size.videoResolution.height}");
+      print("Width: ${size.videoResolution.width}");
+      print("Size: ${size.size}");
+    }
+    expect(mediaStream, isNotNull);
     yt.close();
-  });
+  }, timeout: const Timeout(Duration(minutes: 1)));
 
   test('Get video media stream with invalid id', () async {
     var yt = YoutubeExplode();
